@@ -53,9 +53,30 @@ To build and run this distributed computing system, the following components are
 
 <br>
 
+## Viewing logs
+
+Since I'm using a cluster setup, I need to access the pod logs using the kubectl utility. To monitor logs for the dispatcher and worker apps, first get the name of that pod using the below command:
+```
+kubectl get pods
+```
+
+After locating the dispatcher or worker app pod, open a terminal for each of them, and run the below command to view the log monitor:
+```
+kubectl logs -f <pod-name>
+```
+
+<br>
+
 ## Redis setup
 
 Redis is deployed as a single pod inside the Kubernetes cluster, exposed via a ClusterIP service named `redis-svc`. A ConfigMap stores non-sensitive connection details like host, port, and queue name, while a Secret can optionally store the Redis password. Both the dispatcher and worker apps read these environment variables to connect to Redis and communicate through a shared queue. No manual queue creation is needed—Redis creates it automatically on the first push.
+
+To access the Redis using an interactive terminal, first get the pod name for it, and execute the below command:
+```
+kubectl exec -it <pod-name> -- redis-cli
+```
+
+Here we can check the queues, the data inside it, and other properties.
 
 <br>
 
