@@ -4,6 +4,7 @@
 
 - [Why We Need Distributed Computing](#why-we-need-distributed-computing)
 - [System Architecture](#system-architecture)
+- [Requirements](#requirements)
 - [Redis Setup](#redis-setup)
 - [Initiating Computation via HTTP Request](#initiating-computation-via-http-request)
 - [Simulation and Results](#simulation-and-results)
@@ -37,6 +38,18 @@ This architecture also makes it easier to:
 In this system, a Dispatcher App pushes tasks into a Redis queue, and multiple Worker Apps across different nodes pull and process these tasks concurrently. This setup enables scalable and decoupled processing.
 
 ![alt text](https://github.com/siddhesh2263/distributed-computing-redis-python/blob/main/assets/architecture.png?raw=true)
+
+<br>
+
+## Requirements
+
+To build and run this distributed computing system, the following components are required:
+* Python 3.10+ – Both the dispatcher and worker services are written in Python. The dispatcher uses Flask to expose an HTTP endpoint, and both services use the `redis` library to interact with the Redis queue.
+* Redis – Acts as the central message queue. It’s deployed inside the Kubernetes cluster as a single pod and exposed via a ClusterIP service (`redis-svc`). Redis automatically creates the queue on first use, so no manual setup is needed.
+* Docker – Each service (dispatcher and worker) is containerized using Docker. A minimal Python base image is used along with a simple `requirements.txt` file for dependencies.
+* Kubernetes (K3s or any other distribution) – The system is deployed on a Kubernetes cluster. The dispatcher, Redis, and worker services are all managed via Kubernetes Deployments. Redis connection details are provided via ConfigMaps and Secrets.
+* kubectl – Used to apply manifests, monitor pods, and inspect logs.
+* curl – To trigger computation by sending POST requests to the dispatcher service.
 
 <br>
 
