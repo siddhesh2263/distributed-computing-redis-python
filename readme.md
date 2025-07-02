@@ -23,3 +23,7 @@ When dealing with concurrency, the order of execution should not impact the fina
 ## Handling errors
 
 Redis is not 100% foolproof to certain types of error scenarios. Firstly, multiple workers should not be able to access the same message, and this is something Redis handles. However, if a message is pulled, and the worker crashes during processing it, we need to handle this explicitly. RabbitMQ handles this by itself, but this is something we will not cover in this setup.
+
+<br>
+
+![alt text](https://github.com/siddhesh2263/distributed-computing-redis-python/blob/main/assets/ten_seconds.gif?raw=true)
