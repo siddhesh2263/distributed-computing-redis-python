@@ -1,5 +1,17 @@
 # Distributed computing using a Redis queue and Python
 
+## Table of contents
+
+1. [Why We Need Distributed Computing](#why-we-need-distributed-computing)
+2. [System Architecture](#system-architecture)
+3. [Redis Setup](#redis-setup)
+4. [Initiating Computation via HTTP Request](#initiating-computation-via-http-request)
+5. [Simulation and Results](#simulation-and-results)
+6. [Future Enhancements](#future-enhancements)
+7. [References](#references)
+
+<br>
+
 ## Why we need distributed computing
 
 Python, due to the Global Interpreter Lock (GIL), is inherently single-threaded. This makes it difficult to scale CPU-bound tasks efficiently using threads or basic multiprocessing alone. While the `multiprocessing` module allows parallelism up to the number of CPU cores on a single machine, it hits a hard limit when trying to scale beyond that.
