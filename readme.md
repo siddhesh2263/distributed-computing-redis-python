@@ -26,4 +26,10 @@ Redis is not 100% foolproof to certain types of error scenarios. Firstly, multip
 
 <br>
 
-![alt text](https://github.com/siddhesh2263/distributed-computing-redis-python/blob/main/assets/ten_seconds.gif?raw=true)
+## System architecture
+
+![alt text](https://github.com/siddhesh2263/distributed-computing-redis-python/blob/main/assets/architecture.png?raw=true)
+
+<br>
+
+![alt text](https://github.com/siddhesh2263/distributed-computing-redis-python/blob/main/assets/simulation.gif?raw=true)
