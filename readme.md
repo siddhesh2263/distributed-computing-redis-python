@@ -5,6 +5,7 @@
 - [Why We Need Distributed Computing](#why-we-need-distributed-computing)
 - [System Architecture](#system-architecture)
 - [Requirements](#requirements)
+- [Viewing logs](#viewing-logs)
 - [Redis Setup](#redis-setup)
 - [Initiating Computation via HTTP Request](#initiating-computation-via-http-request)
 - [Simulation and Results](#simulation-and-results)
