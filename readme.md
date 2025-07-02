@@ -2,13 +2,13 @@
 
 ## Table of contents
 
-1. [Why We Need Distributed Computing](#why-we-need-distributed-computing)
-2. [System Architecture](#system-architecture)
-3. [Redis Setup](#redis-setup)
-4. [Initiating Computation via HTTP Request](#initiating-computation-via-http-request)
-5. [Simulation and Results](#simulation-and-results)
-6. [Future Enhancements](#future-enhancements)
-7. [References](#references)
+- [Why We Need Distributed Computing](#why-we-need-distributed-computing)
+- [System Architecture](#system-architecture)
+- [Redis Setup](#redis-setup)
+- [Initiating Computation via HTTP Request](#initiating-computation-via-http-request)
+- [Simulation and Results](#simulation-and-results)
+- [Future Enhancements](#future-enhancements)
+- [References](#references)
 
 <br>
 
@@ -69,7 +69,7 @@ Live logs from each worker pod show messages being processed independently, conf
 
 <br>
 
-## Future ehancements
+## Future enhancements
 
 Possible enhancements include using a separate Redis database to track processed message IDs and prevent accidental duplicates due to rare race conditions. A dedicated dead-letter queue (DLQ) can also be added to capture messages that consistently fail processing. To handle potential message loss (e.g., if a worker crashes after popping but before finishing), an intermediate "in-process" queue can be introduced following Redis’s Reliable Queue pattern. For more robust reliability, solutions like RabbitMQ or AWS SQS can be considered.
 
