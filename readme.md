@@ -72,6 +72,8 @@ kubectl logs -f <pod-name>
 
 Redis is deployed as a single pod inside the Kubernetes cluster, exposed via a ClusterIP service named `redis-svc`. A ConfigMap stores non-sensitive connection details like host, port, and queue name, while a Secret can optionally store the Redis password. Both the dispatcher and worker apps read these environment variables to connect to Redis and communicate through a shared queue. No manual queue creation is needed—Redis creates it automatically on the first push.
 
+![alt text](https://github.com/siddhesh2263/distributed-computing-redis-python/blob/main/assets/redis_queue.png?raw=true)
+
 To access the Redis using an interactive terminal, first get the pod name for it, and execute the below command:
 ```
 kubectl exec -it <pod-name> -- redis-cli
