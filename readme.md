@@ -1,35 +1,62 @@
 # Distributed computing using Python and Redis
 
-There are limitations to using multiprocessing for distributed computing. Python is inherently single threaded, which means the Python apps will run on a single thread, and that is not sufficient. There will be a need to distribute the computation work across multiple cores or multiple CPUs.
+## Why we need distributed computing
 
-Some people think threading is an option to that, but no, because Python is single threaded. For computational work, multithreading is not going to speed up the app whatsoever.
+Python, due to the Global Interpreter Lock (GIL), is inherently single-threaded. This makes it difficult to scale CPU-bound tasks efficiently using threads or basic multiprocessing alone. While the `multiprocessing` module allows parallelism up to the number of CPU cores on a single machine, it hits a hard limit when trying to scale beyond that.
 
-If the app is IO bound, then yes threading can work. But it is much simpler to use Async.
+I used to mistakenly assume that threading improves performance for all workloads, but that only holds true for I/O-bound tasks. For CPU-intensive operations, threading in Python offers no real performance gain because of the GIL. Although `asyncio` is a better fit for I/O-bound concurrency, it doesn’t solve the problem of parallel computation across machines.
 
-Subprocesses can scale up to the number of cores on a single machine, but when we want to scale up more, we would need to rewrite the code to handle things differently. And it is not difficult to write code to start off with to be completely distributed, as opposed to be limited to a single computer using subprocesses.
+This project is built to address these limitations from the ground up:
+* It offloads processing work to distributed worker pods running on a cluster.
+* It uses Redis as a shared queue to decouple task submission from task execution.
+* Each unit of work is pushed into the queue and processed concurrently by multiple workers—across pods, cores, or machines.
 
-Below is the high level architecture of the system:
+By embracing this approach early, rather than retrofitting multiprocessing later, the system becomes more scalable.
 
-IMAGE HERE
-
-## Concurrent work
-
-The operation is going to be concurrent. This will be defined by the messages in the Redis queue. The message will contain all the information it needs for another application to look at, and perform the work that is to be done.
-
-This setup is scalable, compared to subprocessing on a single system.
-
-When dealing with concurrency, the order of execution should not impact the final output. While the messages might be pulled in order from the Redis queue, it is not guarenteed the worker will finish processing them in the same order. As long as we have this behaviour, the above setup works.
-
-## Handling errors
-
-Redis is not 100% foolproof to certain types of error scenarios. Firstly, multiple workers should not be able to access the same message, and this is something Redis handles. However, if a message is pulled, and the worker crashes during processing it, we need to handle this explicitly. RabbitMQ handles this by itself, but this is something we will not cover in this setup.
+This architecture also makes it easier to:
+* Add or remove workers on the fly (horizontal scaling)
+* Distribute tasks without managing local process pools
+* Build toward a cloud-native model using containers and Kubernetes
 
 <br>
 
 ## System architecture
 
+In this system, a Dispatcher App pushes tasks into a Redis queue, and multiple Worker Apps across different nodes pull and process these tasks concurrently. This setup enables scalable and decoupled processing.
+
 ![alt text](https://github.com/siddhesh2263/distributed-computing-redis-python/blob/main/assets/architecture.png?raw=true)
 
 <br>
 
+## Redis setup
+
+Redis is deployed as a single pod inside the Kubernetes cluster, exposed via a ClusterIP service named `redis-svc`. A ConfigMap stores non-sensitive connection details like host, port, and queue name, while a Secret can optionally store the Redis password. Both the dispatcher and worker apps read these environment variables to connect to Redis and communicate through a shared queue. No manual queue creation is needed—Redis creates it automatically on the first push.
+
+<br>
+
+## Initiating computation via HTTP request
+
+The Dispatcher App exposes a `/dispatch` endpoint that allows users to trigger message generation through an HTTP POST request. The request body includes the number of messages to generate and the delay between each. When this endpoint is called, the dispatcher pushes the specified number of messages into the Redis queue, which are then picked up by the worker apps for processing.
+
+Below is an example curl command:
+```
+curl -X POST http://10.0.0.191:8000/dispatch \
+     -H "Content-Type: application/json" \
+     -d '{"num_messages": 10, "delay": 0.1}'
+```
+
+<br>
+
+## Simulation and results
+
+Once the system is deployed, a POST request is sent to the Dispatcher App to simulate the workload. The Dispatcher generates the specified number of messages and pushes them to the Redis queue. Multiple Worker Apps, running across different nodes, pull these messages concurrently and process them.
+
 ![alt text](https://github.com/siddhesh2263/distributed-computing-redis-python/blob/main/assets/simulation.gif?raw=true)
+
+Live logs from each worker pod show messages being processed independently, confirming that the system is working as a distributed, decoupled, and scalable setup.
+
+<br>
+
+## Future ehancements
+
+Possible enhancements include using a separate Redis database to track processed message IDs and prevent accidental duplicates due to rare race conditions. A dedicated dead-letter queue (DLQ) can also be added to capture messages that consistently fail processing. To handle potential message loss (e.g., if a worker crashes after popping but before finishing), an intermediate "in-process" queue can be introduced following Redis’s Reliable Queue pattern. For more robust reliability, solutions like RabbitMQ or AWS SQS can be considered.
