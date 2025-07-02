@@ -1,4 +1,4 @@
-# Distributed computing using Python and Redis
+# Distributed computing using a Redis queue and Python
 
 ## Why we need distributed computing
 
@@ -60,3 +60,9 @@ Live logs from each worker pod show messages being processed independently, conf
 ## Future ehancements
 
 Possible enhancements include using a separate Redis database to track processed message IDs and prevent accidental duplicates due to rare race conditions. A dedicated dead-letter queue (DLQ) can also be added to capture messages that consistently fail processing. To handle potential message loss (e.g., if a worker crashes after popping but before finishing), an intermediate "in-process" queue can be introduced following Redis’s Reliable Queue pattern. For more robust reliability, solutions like RabbitMQ or AWS SQS can be considered.
+
+<br>
+
+## References
+
+[Distributed Computing using a Redis Queue](https://www.youtube.com/watch?v=XCSARhkRg7g)
